@@ -6,6 +6,7 @@ from flask import Flask, request, jsonify
 from telegram import Update
 from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler, MessageHandler, filters
 import httpx
+import re
 
 
 print("this is 1st line of code")
@@ -27,9 +28,23 @@ if not BOT_TOKEN or not CHAT_ID:
 def send_text(message):
     print("this is fourth line of code")
     url = f'https://api.telegram.org/bot{BOT_TOKEN}/sendMessage'
+    raw_text = message
+    print("Raw response from API:")
+    print(raw_text)
+
+    # Format the response
+    # if raw_text.startswith("Summary:"):
+    #     raw_text = raw_text[len("Summary:"):]
+
+    raw_text = raw_text.replace("\\n", "\n").strip()
+    raw_text = re.sub(r'\n+', '\n', raw_text)
+    formatted_text = re.sub(r'(\s*-\s.*?)(\.)\n', r'\1\n', raw_text)
+
+    print("Formatted response:")
+    print(formatted_text)
     payload = {
         'chat_id': CHAT_ID,
-        'text': message,
+        'text': formatted_text,
         'parse_mode': 'Markdown'
     }
     response = requests.post(url, data=payload)
@@ -61,6 +76,7 @@ FASTAPI_URL = "https://tangy-roses-design.loca.lt/v1/ask"  # Flask runs on port 
 
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     print("this is 7th line of code")
+    
     user = update.effective_user.first_name
     text = update.message.text
     print(f"Message from {user}: {text}")
@@ -72,13 +88,26 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
             params={"query": text},
             headers={"accept": "*/*"}
         )
-    status = response.text  # send the raw body as response
-    print(status)
-    # status = "Message sent successfully"
-    # print(f"Response from Flask: {status}")
-    # Reply to the user in Telegram
 
-    await update.message.reply_text(f"You said: {text}\nReceive Response from destination: {status}")
+    raw_text = response.text
+    print("Raw response from API:")
+    print(raw_text)
+
+    # Format the response
+    if raw_text.startswith("Summary:"):
+        raw_text = raw_text[len("Summary:"):]
+
+    raw_text = raw_text.replace("\\n", "\n").strip()
+    raw_text = re.sub(r'\n+', '\n', raw_text)
+    formatted_text = re.sub(r'(\s*-\s.*?)(\.)\n', r'\1\n', raw_text)
+
+    print("Formatted response:")
+    print(formatted_text)
+
+    # Send the formatted text back to the user
+    await update.message.reply_text(
+        f"You said: {text}\n\nReceived Response:\n{formatted_text}"
+    )
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     print("this is 8th line of code")
