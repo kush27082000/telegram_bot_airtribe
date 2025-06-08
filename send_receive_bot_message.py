@@ -86,7 +86,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 def run_flask():
     print("this is 9th line of code")
-    flask_app.run(debug=True, use_reloader=False)
+    flask_app.run(host="0.0.0.0", port=5000, debug=True, use_reloader=False)
 
 def run_telegram_bot():
     print("this is 10th line of code")
