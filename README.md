@@ -53,5 +53,3 @@ Here are the step-by-step instructions to run your Flask Telegram bot project:
 **Note:**  
 - Make sure your bot token and chat ID are correct.
 - Your bot must be able to message the chat (add it to the group or start a chat with it).
-
-Let me know if you need help with any step!
