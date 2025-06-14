@@ -15,8 +15,8 @@ flask_app = Flask(__name__)
 
 
 print("this is 2nd line of code")
-BOT_TOKEN = '7397869585:AAEIY4scwGbkiURELozPmbny5wER1DHK1WU'
-CHAT_ID = '5629181035'
+BOT_TOKEN = ''
+CHAT_ID = ''
 
 # BOT_TOKEN = os.environ.get("BOT_TOKEN")
 # CHAT_ID = os.environ.get("CHAT_ID")
